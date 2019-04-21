@@ -63,48 +63,31 @@ class AirQualitySpider(scrapy.Spider):
         :return:
         """
         conn = DATA_SOURCE['data_source'].getConnect()  # 从连接池中获取一个连接
-        conn.delete("DELETE FROM cur_data WHERE city_code NOT LIKE '41%'")  # 删除所有非河南的实时数据
+        # '410100' : 郑州,
+        # '410200' : 开封,
+        # '410300' : 洛阳,
+        # '410700' : 新乡,
+        # '411000' : 许昌
+
+        # 删除所有非以上城市的实时数据
+        conn.delete("DELETE FROM cur_data WHERE city_code NOT IN ('410100', '410200', '410300', '410700', '411000')")
         args = []
-        args_henan = []
         while len(CUR_DATA_LIST) > 0:
             item = CUR_DATA_LIST.pop()
-            """
-            对于实时数据若非河南省则采取更新策略，
-            对于是河南数据则采取插入策略
-            """
-            # if item.get('city_code')[:2] != '41':  # 非河南省地区的城市先删除
-            #     conn.delete("DELETE FROM cur_data WHERE city_code=%s and time=%s;",
-            #                 args=(item.get('city_code'), item.get('time')))
-            if item.get('city_code')[:2] != '41':	# 非河南省地区
-                args.append((
-                        item.get('city_code'),
-                        item.get('time'),
-                        item.get('aqi'),
-                        item.get('pm2_5'),
-                        item.get('pm10'),
-                        item.get('so2'),
-                        item.get('no2'),
-                        item.get('co'),
-                        item.get('o3'),
-                        item.get('pri_pollutant'),
-                    ))
-            else:
-                args_henan.append((
-                        item.get('city_code'),
-                        item.get('time'),
-                        item.get('aqi'),
-                        item.get('pm2_5'),
-                        item.get('pm10'),
-                        item.get('so2'),
-                        item.get('no2'),
-                        item.get('co'),
-                        item.get('o3'),
-                        item.get('pri_pollutant'),
-                    ))
+            args.append((
+                    item.get('city_code'),
+                    item.get('time'),
+                    item.get('aqi'),
+                    item.get('pm2_5'),
+                    item.get('pm10'),
+                    item.get('so2'),
+                    item.get('no2'),
+                    item.get('co'),
+                    item.get('o3'),
+                    item.get('pri_pollutant'),
+                ))
         conn.insert_many("INSERT INTO cur_data(city_code, time, aqi, pm2_5, pm10, so2, no2, co, o3, pri_pollutant) "
                          "VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", args=args)
-        conn.insert_many("INSERT INTO cur_data(city_code, time, aqi, pm2_5, pm10, so2, no2, co, o3, pri_pollutant) "
-                         "VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", args=args_henan)
         # 非实时数据
         if len(AQI_INFO_LIST) > 0:
             args = []
