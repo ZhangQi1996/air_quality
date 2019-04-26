@@ -64,13 +64,12 @@ class AirQualitySpider(scrapy.Spider):
         """
         conn = DATA_SOURCE['data_source'].getConnect()  # 从连接池中获取一个连接
         # '410100' : 郑州,
-        # '410200' : 开封,
         # '410300' : 洛阳,
         # '410700' : 新乡,
         # '411000' : 许昌
 
         # 删除所有非以上城市的实时数据
-        conn.delete("DELETE FROM cur_data WHERE city_code NOT IN ('410100', '410200', '410300', '410700', '411000')")
+        conn.delete("DELETE FROM cur_data WHERE city_code NOT IN ('410100', '410300', '410700', '411000')")
         args = []
         while len(CUR_DATA_LIST) > 0:
             item = CUR_DATA_LIST.pop()
