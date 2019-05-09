@@ -26,7 +26,7 @@ class AirQualitySpider(scrapy.Spider):
         scrapy.Spider.close(spider, reason)
 
     @staticmethod
-    def send_bug_email(err: BaseException):
+    def send_bug_email(err=None, type=0):
         mailer = MailSender(
             smtphost="smtp.163.com",  # 发送邮件的服务器
             mailfrom="18239961260@163.com",  # 邮件发送者
@@ -51,7 +51,19 @@ class AirQualitySpider(scrapy.Spider):
                         <p><font color='red'>%s</font></p>
                     </body>
                   </html>
-                """ % (err.__str__(), '出错类型：' + str(err.__class__).lstrip('<').rstrip('>'))
+                """ % (err.__str__(), '出错类型：' + str(err.__class__).lstrip('<').rstrip('>')) if type == 0 else """<html>
+                            <body>
+                                <h3><i style='color:#349CFF;'>【Infinity Group: BUG侦测系统】</i></h3>
+                                <p>
+                                    <strong>助手小i提醒您</strong>  位于
+                                    <font color='green'>
+                                        <a href='https://www.aliyun.com/'>阿里云服务器</a>
+                                    </font>上基于scrapy的爬虫程序已经关闭了，
+                                    <font color='red'>若非管理员正常关闭，请及时前往重新启动！！！</font>
+                                </p>
+                            </body>
+                          </html>
+                        """
         cc = None
         mailer.send(to=to, subject=subject, body=body, cc=cc, mimetype='text/HTML')  # 抄送类似于分发
 
@@ -140,4 +152,4 @@ class AirQualitySpider(scrapy.Spider):
             yield scrapy.Request(self.start_urls[0], self.parse)    # 开启下一轮
         except Exception as e:
             self.crawler.engine.close_spider(self, 'response msg error %s, job done!' % 'spider出现BUG自动关闭')
-            AirQualitySpider.send_bug_email(e)
+            AirQualitySpider.send_bug_email(err=e, type=0)

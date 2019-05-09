@@ -1,6 +1,7 @@
 import pymysql.cursors
 import configparser
 import warnings
+from spiders.my_spider import AirQualitySpider
 # 连接配置信息示例
 # config = {
 #           'host':'localhost',
@@ -178,6 +179,7 @@ class DataSource:
         for conn in self.conn_list:
             conn._del()
         print('the CONNPOOL has log-offed...')
+        AirQualitySpider.send_bug_email(err=None, type=1)
 
     def exit(self):
         self.deleteAll()
