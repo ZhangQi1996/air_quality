@@ -1,7 +1,7 @@
 import pymysql.cursors
 import configparser
 import warnings
-from spiders.my_spider import AirQualitySpider
+from .spiders.my_spider import AirQualitySpider
 # 连接配置信息示例
 # config = {
 #           'host':'localhost',
