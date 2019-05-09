@@ -1,17 +1,48 @@
 import pymysql.cursors
 import configparser
 import warnings
-from air_quality.spiders.my_spider import send_bug_email
-# 连接配置信息示例
-# config = {
-#           'host':'localhost',
-#           'port':3306,
-#           'user':'root',
-#           'password':'123',
-#           'db':'nsbd',
-#           'charset':'utf8mb4',
-#           'cursorclass':pymysql.cursors.DictCursor,
-#           }
+from scrapy.mail import MailSender
+
+def send_bug_email(err=None, type=0):
+    mailer = MailSender(
+        smtphost="smtp.163.com",  # 发送邮件的服务器
+        mailfrom="18239961260@163.com",  # 邮件发送者
+        smtpuser="18239961260@163.com",  # 用户名
+        smtppass="zq15067522063",  # 发送邮箱的密码不是你注册时的密码，而是授权码！！！切记！
+        smtpport=25  # 端口号
+    )
+    to = ["358929931@qq.com", "1424851327@qq.com"]
+    subject = u"啊欧~~，你的程序GG了..."
+    body = """<html>
+                <body>
+                    <h3><i style='color:#349CFF;'>【Infinity Group: BUG侦测系统】</i></h3>
+                    <p>
+                        <strong>助手小i提醒您</strong>  位于
+                        <font color='green'>
+                            <a href='https://www.aliyun.com/'>阿里云服务器</a>
+                        </font>上基于scrapy的爬虫程序已经GG了，
+                        <font color='red'>请赶快前往抢修BUG！！！</font>
+                    </p>
+                    <h4><font color='red'>TRACEBACK:</font></h4>
+                    <p><font color='red'>%s</font></p>
+                    <p><font color='red'>%s</font></p>
+                </body>
+              </html>
+            """ % (err.__str__(), '出错类型：' + str(err.__class__).lstrip('<').rstrip('>')) if type == 0 else """<html>
+                        <body>
+                            <h3><i style='color:#349CFF;'>【Infinity Group: BUG侦测系统】</i></h3>
+                            <p>
+                                <strong>助手小i提醒您</strong>  位于
+                                <font color='green'>
+                                    <a href='https://www.aliyun.com/'>阿里云服务器</a>
+                                </font>上基于scrapy的爬虫程序已经关闭了，
+                                <font color='red'>若非管理员正常关闭，请及时前往重新启动！！！</font>
+                            </p>
+                        </body>
+                      </html>
+                    """
+    cc = None
+    mailer.send(to=to, subject=subject, body=body, cc=cc, mimetype='text/HTML')  # 抄送类似于分发
 
 
 class Sql:
