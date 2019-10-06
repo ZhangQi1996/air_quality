@@ -95,7 +95,7 @@ DUPEFILTER_CLASS = 'scrapy.dupefilter.BaseDupeFilter'   # 允许重复爬取同�
 import pymysql
 
 DB_CONFIG = {
-    'host': '120.24.217.229',
+    'host': 'www.david-zhang.cn',
     'port': 3306,
     'user': 'root',
     'password': 'zq15067522063',
