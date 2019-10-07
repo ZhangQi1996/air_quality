@@ -4,6 +4,7 @@ from air_quality.settings import DATA_SOURCE, DB_CONFIG, CUR_DATA_LIST, AQI_INFO
 from air_quality.connpool import DataSource
 from scrapy.mail import MailSender
 import time
+from ..utils import _print
 
 
 def send_bug_email(err=None, type=0):
@@ -108,7 +109,7 @@ class AirQualitySpider(scrapy.Spider):
             conn.insert_many("INSERT INTO aqi_info(city_code, date, aqi, pri_pollutant) VALUES(%s, %s, %s, %s);",
                              args=args)
         conn.close()
-        print("the current data has been updated on:%s" % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())))
+        _print("the current data has been updated on:%s" % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time())))
 
     def parse(self, response):
         try:

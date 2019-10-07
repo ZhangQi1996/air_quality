@@ -2,6 +2,7 @@ import pymysql.cursors
 import configparser
 import warnings
 from scrapy.mail import MailSender
+from .utils import _print
 
 def send_bug_email(err=None, type=0):
     mailer = MailSender(
@@ -115,14 +116,14 @@ class Sql:
                     cursor.execute(sql, args)
             self.connection.commit()
         except pymysql.err.IntegrityError as e:     # 完整性错误，如插入重复键
-            print("Error: %s %s" % (e, type(e)))
+            _print("Error: %s %s" % (e, type(e)))
             if ignore_integrity_error is False:
                 self.connection.rollback()
             else:
-                print("\tand the Error has been ignored(there was not a rollback in the transaction)")
-                print("\tyou should set False to param:ignore_integrity_error, if you donnot want ignore that error..")
+                _print("\tand the Error has been ignored(there was not a rollback in the transaction)")
+                _print("\tyou should set False to param:ignore_integrity_error, if you donnot want ignore that error..")
         except Exception as e:
-            print("Error: %s %s" % (e, type(e)))
+            _print("Error: %s %s" % (e, type(e)))
             self.connection.rollback()
             raise e
 
@@ -133,14 +134,14 @@ class Sql:
                     cursor.executemany(sql, args)
             self.connection.commit()
         except pymysql.err.IntegrityError as e:     # 完整性错误，如插入重复键
-            print("Error: %s %s" % (e, type(e)))
+            _print("Error: %s %s" % (e, type(e)))
             if ignore_integrity_error is False:
                 self.connection.rollback()
             else:
-                print("\tand the Error has been ignored(there was not a rollback in the transaction)")
-                print("\tyou should set False to param:ignore_integrity_error, if you donnot want ignore that error..")
+                _print("\tand the Error has been ignored(there was not a rollback in the transaction)")
+                _print("\tyou should set False to param:ignore_integrity_error, if you donnot want ignore that error..")
         except Exception as e:
-            print("Error: %s %s" % (e, type(e)))
+            _print("Error: %s %s" % (e, type(e)))
             self.connection.rollback()
             raise e
 
@@ -157,7 +158,7 @@ class Sql:
         try:
             self.connection.close()
         except Exception as e:
-            print("Error: %s %s" % (e, type(e)))
+            _print("Error: %s %s" % (e, type(e)))
 
 
 class DataSource:
@@ -165,11 +166,11 @@ class DataSource:
     def __init__(self, conf, max_conn_counts=5):
         """max_conn_count是最大连接数,conf是连接数据库的基本配置,它可以是一个字典类型也可以是一个配置文件名，\
         若是配置文件名,则配置文件中的session名必须为‘[db]’详细参考ConfigParser模块的使用"""
-        print('the CONNPOOL is initiating...')
+        _print('the CONNPOOL is initiating...')
         if isinstance(conf, dict):
             self.conf = conf
         elif isinstance(conf, str):
-            print('正在读取DB配置文件...')
+            _print('正在读取DB配置文件...')
             self.conf = {}
             self.__readConfFile(conf)
         else:
@@ -179,12 +180,12 @@ class DataSource:
         elif max_conn_counts not in range(1,11):#连接数介于1-10之间
             raise Exception("最大连接数必须介于1-10之间")
         else:
-            print('the init of CONNPOOL is running...')
+            _print('the init of CONNPOOL is running...')
             # 连接池的存储连接列表
             self.conn_list = []
             for i in range(0, max_conn_counts):
                 self.conn_list.append(Sql(conf=self.conf, conn_pool=self))
-            print('the init of CONNPOOL is successful...')
+            _print('the init of CONNPOOL is successful...')
 
     def __readConfFile(self, filePath):
         cp = configparser.ConfigParser()
@@ -206,10 +207,10 @@ class DataSource:
     def deleteAll(self):
         """在程序运行时关闭连接池"""
         warnings.warn('it is a deprecated func, please use exit() func..', DeprecationWarning)
-        print('the CONNPOOL is log-offing...')
+        _print('the CONNPOOL is log-offing...')
         for conn in self.conn_list:
             conn._del()
-        print('the CONNPOOL has log-offed...')
+        _print('the CONNPOOL has log-offed...')
         send_bug_email(err=None, type=1)
 
     def exit(self):

@@ -114,7 +114,7 @@ CUR_DATA_LIST, AQI_INFO_LIST = [], []
 
 import datetime
 to_day = datetime.datetime.now()
-LOG_LEVEL = 'WARNING'
+LOG_LEVEL = 'INFO'
 LOG_ENABLED = True
 log_file_path = 'log/scrapy_{}_{}_{}.log'.format(to_day.year, to_day.month, to_day.day)
 LOG_FILE = log_file_path
@@ -128,3 +128,6 @@ EMAIL_CONF = {
     'MAIL_TLS': False,
     'MAIL_SSL': False,
 }
+
+DEBUG = False
+
