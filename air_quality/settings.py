@@ -90,7 +90,7 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-DUPEFILTER_CLASS = 'scrapy.dupefilter.BaseDupeFilter'   # 允许重复爬取同一网址
+# DUPEFILTER_CLASS = 'scrapy.dupefilter.BaseDupeFilter'   # 允许重复爬取同一网址
 
 import pymysql
 
