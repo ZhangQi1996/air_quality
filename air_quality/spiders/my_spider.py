@@ -150,7 +150,7 @@ class AirQualitySpider(scrapy.Spider):
                 self.global_tag = 0
             self.batch_insert_and_update()
             time.sleep(3600)   # 每隔一个小时访问一次
-            yield scrapy.Request(self.start_urls[0], self.parse)    # 开启下一轮
+            yield scrapy.Request(self.start_urls[0], self.parse, dont_filter=True)    # 开启下一轮
         except Exception as e:
             self.crawler.engine.close_spider(self, 'response msg error %s, job done!' % 'spider出现BUG自动关闭')
             send_bug_email(err=e, type=0)
